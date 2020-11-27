@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+      "baseUrl": "./",
+      "rootDir": "./",
+      "outDir": "./dist/",
+      "noImplicitAny": true,
+      "sourceMap": true,
+      "module": "es6",
+      "target": "es5",
+      "jsx": "react",
+      "allowJs": true,
+      "moduleResolution": "node",
+      "paths": {
+        "@src/*": ["src/*"],
+        "@images/*": ["src/images/*"],
+        "@styles/*": ["src/styles/*"],
+        "@components/*": ["src/components/*"]
+      },
+      "allowSyntheticDefaultImports": true,
+    },
+    "exclude": ["node_modules", "webpack"]
+}
