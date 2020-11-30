@@ -1,0 +1,34 @@
+{
+  "name": "flashcards-web",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Egor Zotov",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/html-webpack-plugin": "^3.2.4",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^6.3.2",
+    "cross-env": "^7.0.2",
+    "css-loader": "^5.0.1",
+    "html-webpack-plugin": "^4.5.0",
+    "style-loader": "^2.0.0",
+    "ts-loader": "^8.0.11",
+    "webpack": "^5.8.0",
+    "webpack-cli": "^4.2.0",
+    "webpack-dev-server": "^3.11.0",
+    "webpack-merge": "^5.4.0"
+  },
+  "scripts": {
+    "build": "webpack",
+    "start": "cross-env NODE_ENV=development webpack serve --config webpack/webpack.dev.js",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --quiet",
+    "lint-fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
+  },
+  "dependencies": {
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.1.6",
+    "@types/styled-components": "^5.1.4"
+  }
+}

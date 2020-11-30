@@ -21,6 +21,7 @@ module.exports = {
       jsx: true, // Allows for the parsing of JSX
       arrowFunctions: true,
     },
+    project: ['./packages/*/tsconfig.json']
   },
   plugins: ['react', '@typescript-eslint', 'prettier'],
   settings: {

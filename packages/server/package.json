@@ -1,0 +1,20 @@
+{
+  "name": "flashcard-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@types/koa": "^2.11.6",
+    "@types/koa-bodyparser": "^4.3.0",
+    "@types/koa-router": "^7.4.1",
+    "apollo-server-koa": "^2.19.0",
+    "graphql": "^15.4.0"
+  },
+  "scripts": {
+    "start": "nodemon src/app.ts"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6",
+    "ts-node": "^9.0.0"
+  }
+}
