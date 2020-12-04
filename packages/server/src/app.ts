@@ -1,25 +1,44 @@
-const Koa = require('koa'); // koa@2
-const { ApolloServer, gql } = require('apollo-server-koa');
+import Koa from 'koa'; // koa@2
+import { ApolloServer, gql, makeExecutableSchema } from 'apollo-server-koa';
+import { mergeTypeDefs, mergeResolvers } from '@graphql-toolkit/schema-merging';
+import { AccountsModule } from '@accounts/graphql-api';
+import { Mongo } from '@accounts/mongo';
+import mongoose from 'mongoose';
+import { AccountsServer } from '@accounts/server';
+import { AccountsPassword } from '@accounts/password';
 
-// Construct a schema, using GraphQL schema language
-const typeDefs = gql`
-    type Query {
-        hello: String
-    }
-`;
+mongoose.connect('mongodb://localhost:27017/flashcards', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
 
-// Provide resolver functions for your schema fields
-const resolvers = {
-    Query: {
-        hello: () => 'Hello world!',
+const accountsMongo = new Mongo(mongoose.connection);
+
+const accountsPassword = new AccountsPassword({});
+
+const accountsServer = new AccountsServer(
+    {
+        db: accountsMongo,
+        tokenSecret: 'my-super-random-secret',
     },
-};
+    {
+        password: accountsPassword,
+    },
+);
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const accountsGraphQL = AccountsModule.forRoot({ accountsServer });
 
-const app = new Koa();
-server.applyMiddleware({ app });
-// alternatively you can get a composed middleware from the apollo server
-// app.use(server.getMiddleware());
+// A new schema is created combining our schema and the accounts-js schema
+// const schema = makeExecutableSchema({
+//     typeDefs: mergeTypeDefs([typeDefs, accountsGraphQL.typeDefs]),
+//     resolvers: mergeResolvers([accountsGraphQL.resolvers, resolvers]),
+//     schemaDirectives: {
+//         ...accountsGraphQL.schemaDirectives,
+//     },
+// });
 
-app.listen({ port: 4000 }, () => console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`));
+// When we instantiate our Apollo server we use the schema and context properties
+// const server = new ApolloServer({
+//     schema,
+//     context: accountsGraphQL.context,
+// });

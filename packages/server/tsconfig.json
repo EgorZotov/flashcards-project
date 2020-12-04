@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
     "target": "es6",
     "module": "commonjs",
-    "rootDir": "./",
-    "outDir": "./build",
+    "rootDir": "./src",
+    "outDir": "./dist",
     "esModuleInterop": true,
-    "strict": true
-  },
-  "exclude": [
-    "node_modules"
-  ]
+    "strict": true,
+    "moduleResolution": "node",
+  }
 }

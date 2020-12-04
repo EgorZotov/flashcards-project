@@ -28,12 +28,12 @@ module.exports = {
     react: {
       version: 'detect', // Tells eslint-plugin-react to automatically detect the version of React to use
     },
-    'import/resolver': {
-      node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
-        paths: ['./src'],
-      },
-    },
+    // 'import/resolver': {
+    //   node: {
+    //     extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    //     paths: ['./src'],
+    //   },
+    // },
   },
   rules: {
     // Existing rules
@@ -48,5 +48,11 @@ module.exports = {
     'import/prefer-default-export': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-var-requires': 'off',
-  },
+    "@typescript-eslint/no-empty-interface": [
+      "error",
+      {
+        "allowSingleExtends": true
+      }
+    ]
+  }
 };
