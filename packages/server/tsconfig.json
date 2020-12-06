@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "target": "es6",
     "module": "commonjs",
     "rootDir": "./src",
@@ -8,5 +9,9 @@
     "esModuleInterop": true,
     "strict": true,
     "moduleResolution": "node",
+    "lib": [
+      "es2018",
+      "esnext.asynciterable"
+    ]
   }
 }
