@@ -4,6 +4,13 @@ import { prop, getModelForClass } from '@typegoose/typegoose';
 // Schema
 @ObjectType()
 export class User {
+    @Field()
+    public _id!: string;
+
+    @Field()
+    @prop({ required: true, unique: true })
+    public email!: string;
+
     @Field({ nullable: true })
     @prop()
     public firstname!: string;
@@ -13,8 +20,8 @@ export class User {
     public lastName!: string;
 
     @Field()
-    @prop({ required: true, unique: true, lowercase: true })
-    public username!: string;
+    @prop({ required: true })
+    public password!: string;
 }
 
 // Default export

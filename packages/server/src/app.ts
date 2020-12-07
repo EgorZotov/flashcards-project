@@ -1,11 +1,11 @@
-import Koa from 'koa'; // koa@2
+import express from 'express'; // koa@2
 import 'reflect-metadata';
-import { ApolloServer } from 'apollo-server-koa';
-import { mergeSchemas } from '@graphql-tools/merge';
+import { ApolloServer } from 'apollo-server-express';
 import mongoose from 'mongoose';
 import { buildSchema } from 'type-graphql';
-import { UserResolver, CreateUserInput } from './resolvers/UserResolvers';
-import { getAccountsSchema } from './utils/accountsHelper';
+import { UserResolver } from './resolvers/UserResolvers';
+import dotenv from 'dotenv';
+dotenv.config();
 
 mongoose.connect('mongodb://localhost:27017/flashcards', {
     useNewUrlParser: true,
@@ -15,16 +15,13 @@ mongoose.connect('mongodb://localhost:27017/flashcards', {
 mongoose.connection.once('open', async () => {
     const schema = await buildSchema({
         resolvers: [UserResolver],
-        orphanedTypes: [CreateUserInput],
+        validate: false,
     });
-    const accountsGraphQL = getAccountsSchema();
+    const app = express();
     const server = new ApolloServer({
-        schema: mergeSchemas({
-            schemas: [accountsGraphQL.schema, schema],
-        }),
-        context: accountsGraphQL.context,
+        schema,
+        context: ({ req, res }) => ({ req, res }),
     });
-    const app = new Koa();
     server.applyMiddleware({ app });
     app.listen({ port: 4000 }, () => {
         console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
