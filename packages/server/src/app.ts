@@ -1,10 +1,12 @@
-import express from 'express'; // koa@2
 import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server-express';
+import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
+import express from 'express'; // koa@2
 import mongoose from 'mongoose';
 import { buildSchema } from 'type-graphql';
 import { UserResolver } from './resolvers/UserResolvers';
-import dotenv from 'dotenv';
+import { customAuthChecker, refreshTokenRoute } from './utils/auth';
 dotenv.config();
 
 mongoose.connect('mongodb://localhost:27017/flashcards', {
@@ -16,8 +18,11 @@ mongoose.connection.once('open', async () => {
     const schema = await buildSchema({
         resolvers: [UserResolver],
         validate: false,
+        authChecker: customAuthChecker,
     });
     const app = express();
+    app.use(cookieParser());
+    app.post('/refresh_token', refreshTokenRoute);
     const server = new ApolloServer({
         schema,
         context: ({ req, res }) => ({ req, res }),
@@ -27,18 +32,3 @@ mongoose.connection.once('open', async () => {
         console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
     });
 });
-
-// A new schema is created combining our schema and the accounts-js schema
-// const schema = makeExecutableSchema({
-//     typeDefs: mergeTypeDefs([typeDefs, accountsGraphQL.typeDefs]),
-//     resolvers: mergeResolvers([accountsGraphQL.resolvers, resolvers]),
-//     schemaDirectives: {
-//         ...accountsGraphQL.schemaDirectives,
-//     },
-// });
-
-// When we instantiate our Apollo server we use the schema and context properties
-// const server = new ApolloServer({
-//     schema,
-//     context: accountsGraphQL.context,
-// });

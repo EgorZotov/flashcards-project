@@ -22,6 +22,9 @@ export class User {
     @Field()
     @prop({ required: true })
     public password!: string;
+
+    @prop({ default: 0 })
+    public tokenVersion!: number;
 }
 
 // Default export

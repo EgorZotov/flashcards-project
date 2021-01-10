@@ -9,6 +9,7 @@
     "esModuleInterop": true,
     "strict": true,
     "moduleResolution": "node",
+    "strictPropertyInitialization": false,
     "lib": [
       "es2018",
       "esnext.asynciterable"

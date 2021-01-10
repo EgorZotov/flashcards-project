@@ -1,8 +1,10 @@
-import { Arg, Ctx, Field, InputType, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Authorized, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from 'type-graphql';
 import { User, UserModel } from '../models/User';
 import { hashPassword } from '../utils/crypto';
 import { ApolloContext } from '../types/server';
-import { UserInputError } from 'apollo-server-express';
+import { ApolloError, UserInputError } from 'apollo-server-express';
+import { generateAccessToken, generateRefreshToken, sendRefreshToken } from '../utils/auth';
+// import jwt from 'jsonwebtoken';
 
 @InputType({ description: 'Data for user login' })
 class LoginInput implements Partial<User> {
@@ -13,7 +15,16 @@ class LoginInput implements Partial<User> {
     password!: string;
 }
 
-@InputType({ description: 'Data for user login' })
+@ObjectType()
+class AuthResponse {
+    @Field()
+    accessToken: string;
+
+    @Field(() => User)
+    user: User;
+}
+
+@InputType({ description: 'Data for user signUp' })
 class SignUpInput implements Partial<User> {
     @Field()
     email!: string;
@@ -30,13 +41,14 @@ class SignUpInput implements Partial<User> {
 
 @Resolver()
 export class UserResolver {
+    @Authorized()
     @Query(() => User)
-    me(@Arg('id') id: string): Promise<User> {
-        return UserModel.findById(id).lean();
+    me(@Ctx() ctx: ApolloError): Promise<User> {
+        return UserModel.findById(ctx.userId).lean();
     }
 
-    @Mutation(() => User)
-    async signUp(@Arg('user') signUpData: SignUpInput, @Ctx() ctx: ApolloContext) {
+    @Mutation(() => AuthResponse)
+    async signUp(@Arg('user') signUpData: SignUpInput, @Ctx() ctx: ApolloContext): Promise<AuthResponse> {
         const checkUser = await UserModel.exists({ email: signUpData.email });
         if (checkUser) {
             throw new UserInputError('Failed to signup', {
@@ -45,18 +57,30 @@ export class UserResolver {
         } else {
             const user = new UserModel(signUpData);
             user.password = hashPassword(signUpData.password);
-            return user.save();
+            ctx.res.cookie('token', generateRefreshToken(user), {
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+                httpOnly: true,
+            });
+            await user.save();
+            return {
+                user,
+                accessToken: generateAccessToken(user),
+            };
         }
     }
 
-    @Mutation(() => User)
-    async login(@Arg('user') loginData: LoginInput, @Ctx() ctx: ApolloContext) {
+    @Mutation(() => AuthResponse)
+    async login(@Arg('user') loginData: LoginInput, @Ctx() ctx: ApolloContext): Promise<AuthResponse> {
         const user = await UserModel.findOne({ email: loginData.email, password: hashPassword(loginData.password) });
         if (!user) {
             throw new UserInputError('Failed to login', {
                 code: 'USER_NOT_FOUND',
             });
         }
-        return user;
+        sendRefreshToken(ctx.res, user);
+        return {
+            user,
+            accessToken: generateAccessToken(user),
+        };
     }
 }
