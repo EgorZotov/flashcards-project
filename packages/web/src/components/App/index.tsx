@@ -4,11 +4,13 @@ import Sign from 'pages/Sign';
 
 import { ThemeProvider } from 'styled-components';
 import Themes from 'styles/themes';
+import { GlobalStyles } from 'styles/globalStyles';
 
 const App = () => {
     const [theme, setTheme] = useState<string>('dark');
     return (
         <ThemeProvider theme={Themes[theme]}>
+            <GlobalStyles />
             <Switch>
                 <Route path='/'>
                     <Sign />

@@ -1,5 +1,5 @@
 export default {
     colors: {
-        MainBackgroundColor: '#100e17',
+        MainBackgroundColor: '#6ac2bc',
     },
 };
